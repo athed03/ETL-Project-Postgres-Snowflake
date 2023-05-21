@@ -1,13 +1,11 @@
 from src.postgre import Postgre
 from src.snowflake import Snowflake
-import pandas as pd
 from datetime import datetime, timedelta
 
-import os
-from dotenv import dotenv_values
 
 PG_OBJ = None
 SF_OBJ = None
+
 
 def get_date_filter():
     # Define yesterday date for date filter
@@ -38,11 +36,11 @@ def fact_ingestion(table_name, query_population):
         table_column = PG_OBJ.column_desc(table_name)
         SF_OBJ.create_table_snowflake(
             create_table_sf_query(table_name, table_column))
-    else:
-        if len(data_rows)<=0: 
-            return
-        
-        SF_OBJ.post_fact_table(table_name, data_rows, data_column)
+
+    if len(data_rows)<=0: 
+        return
+    
+    SF_OBJ.post_fact_table(table_name, data_rows, data_column)
 
 
 def dim_ingestion(table_name):
@@ -58,11 +56,11 @@ def dim_ingestion(table_name):
     if not SF_OBJ.check_table_exists(table_name):
         SF_OBJ.create_table_snowflake(
             create_table_sf_query(table_name, table_column))
-    else:
-        if len(data_rows)<=0: 
-            return
-        
-        SF_OBJ.post_fact_table(table_name, data_rows, data_column)
+
+    if len(data_rows)<=0: 
+        return
+    
+    SF_OBJ.post_fact_table(table_name, data_rows, data_column)
 
 def ingest_orders():
     table_name = 'orders'
